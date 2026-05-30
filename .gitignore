@@ -1,0 +1,21 @@
+# SQLite database
+patients.db
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# DB Browser
+patients.sqbpro
+
+# Hugging Face model cache
+.cache/
+
+# IDE / Editor
+.vscode/
+.idea/

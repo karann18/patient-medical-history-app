@@ -1,0 +1,5 @@
+flask==3.0.3
+flask-cors==6.0.2
+sqlalchemy==2.0.34
+transformers==5.9.0
+torch==2.12.0

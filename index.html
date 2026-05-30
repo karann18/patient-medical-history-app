@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Medical History Summary</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <i data-lucide="activity" class="logo-icon"></i>
+                <h2>Agenix AI</h2>
+            </div>
+            
+            <div class="search-container">
+                <i data-lucide="search" class="search-icon"></i>
+                <input type="text" id="searchInput" placeholder="Search patients...">
+            </div>
+
+            <div class="patient-list" id="patientList">
+                <!-- Patient items will be injected here -->
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-bar">
+                <div class="header-title">
+                    <h1>Patient Dashboard</h1>
+                    <p>Select a patient to view medical history and AI recommendations.</p>
+                </div>
+                <button id="addPatientBtn" class="btn primary-btn">
+                    <i data-lucide="user-plus"></i> New Patient
+                </button>
+            </header>
+
+            <div id="dashboardContent" class="dashboard-grid hidden">
+                <!-- Patient Profile Card -->
+                <section class="card profile-card">
+                    <div class="card-header">
+                        <i data-lucide="user"></i>
+                        <h3>Patient Information</h3>
+                    </div>
+                    <div class="card-body" id="patientProfile">
+                        <!-- Content -->
+                    </div>
+                </section>
+
+                <!-- Summary Card -->
+                <section class="card summary-card">
+                    <div class="card-header">
+                        <i data-lucide="file-text"></i>
+                        <h3>Medical Summary</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="summary-highlight" id="patientSummary">
+                            <!-- Content -->
+                        </div>
+                        <div class="medical-details" id="medicalDetails">
+                             <!-- Content -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- AI Recommendations Card -->
+                <section class="card recommendations-card ai-glow">
+                    <div class="card-header ai-header">
+                        <i data-lucide="brain-circuit"></i>
+                        <h3>AI Recommendations</h3>
+                    </div>
+                    <div class="card-body">
+                        <ul class="recommendation-list" id="recommendationList">
+                            <!-- Content -->
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- Recent Encounters Card -->
+                <section class="card encounters-card">
+                    <div class="card-header">
+                        <i data-lucide="calendar"></i>
+                        <h3>Recent Encounters</h3>
+                    </div>
+                    <div class="card-body" id="recentEncounters">
+                        <!-- Content -->
+                    </div>
+                </section>
+            </div>
+            
+            <!-- Empty State -->
+            <div id="emptyState" class="empty-state">
+                <i data-lucide="users" class="empty-icon"></i>
+                <h2>No Patient Selected</h2>
+                <p>Search or select a patient from the sidebar to view their medical history summary and AI recommendations.</p>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal for adding patient (hidden by default) -->
+    <div id="patientModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add New Patient</h2>
+                <button class="close-btn" id="closeModalBtn"><i data-lucide="x"></i></button>
+            </div>
+            <form id="addPatientForm">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="newName" required>
+                </div>
+                <div class="form-group">
+                    <label>Age</label>
+                    <input type="number" id="newAge" required>
+                </div>
+                <div class="form-group">
+                    <label>Gender</label>
+                    <select id="newGender">
+                        <option>Male</option>
+                        <option>Female</option>
+                        <option>Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Allergies (comma separated)</label>
+                    <input type="text" id="newAllergies">
+                </div>
+                <div class="form-group">
+                    <label>Frequent Problems (comma separated)</label>
+                    <input type="text" id="newProblems">
+                </div>
+                <div class="form-group">
+                    <label>Medications (comma separated)</label>
+                    <input type="text" id="newMedications">
+                </div>
+                <div class="form-group">
+                    <label>Surgeries (comma separated)</label>
+                    <input type="text" id="newSurgeries">
+                </div>
+                <button type="submit" class="btn primary-btn full-width">Save Patient Record</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
