@@ -85,82 +85,66 @@ python server.py
 
 ---
 
-## 🔗 Share the Project (GitHub + Ngrok)
+## 🔗 Share the Project (GitHub + Live Demo)
 
-You can give reviewers **two links** so they can either inspect the code or try the app instantly—no install required for the live demo.
+Give reviewers **two links**: source code and a browser demo with a **project-related hostname** (not random words like `ladies-large-earthquake-bible.trycloudflare.com`).
 
-| Link | Best for | What the reviewer does |
-|------|----------|-------------------------|
-| **GitHub repo** | Source code, local setup, code review | Clone the repo → follow the **Setup & Installation** section above |
-| **Ngrok URL** | Quick live demo in a browser | Open your public HTTPS link—no Python, pip, or downloads |
+| Link | URL | Best for |
+|------|-----|----------|
+| **GitHub** | https://github.com/karann18/patient-medical-history-app | Code review, local setup |
+| **Live demo** | **https://patient-medical-history.onrender.com** | WhatsApp / internship sharing (no install) |
 
-Flask serves the UI and API on a **single port (`5000`)**, which makes Ngrok a one-command tunnel.
+Copy-paste message (also in [`share-message.txt`](share-message.txt)):
 
-### Option A — Cloudflare Tunnel (no signup, fastest)
+```text
+Patient Medical History — Live Demo (Agenix AI internship project)
 
-Install [cloudflared](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/downloads/) (or `winget install Cloudflare.cloudflared`), then:
-
-**Terminal 1:**
-```bash
-python server.py
+Code:  https://github.com/karann18/patient-medical-history-app
+Demo:  https://patient-medical-history.onrender.com
 ```
 
-**Terminal 2:**
-```bash
-cloudflared tunnel --url http://127.0.0.1:5000
-```
+### One-time deploy to Render (recommended)
 
-Copy the `https://….trycloudflare.com` URL from the output.
+Free `cloudflared tunnel --url` and free ngrok **cannot** pick a custom subdomain without a paid plan or account setup. The stable fix is a free [Render](https://render.com) web service named **`patient-medical-history`**.
 
-Or run both with the helper script (defaults to cloudflared):
+1. Push this repo to GitHub (if not already).
+2. [Render Dashboard](https://dashboard.render.com) → **New** → **Blueprint** → connect `karann18/patient-medical-history-app`.
+3. Render reads [`render.yaml`](render.yaml) and creates **`https://patient-medical-history.onrender.com`**.
+4. First deploy takes a few minutes. Cloud build uses [`requirements-cloud.txt`](requirements-cloud.txt) (no 1.2 GB ML download); summaries use the same fast text fallback as local before the model loads.
+
+**Note:** Render free tier spins down after inactivity; the first visit may take ~30s to wake up.
+
+### Local demo while developing (`start-demo.ps1`)
+
+For a tunnel from **your laptop** (URL changes each run unless you configure ngrok):
+
 ```powershell
+pip install -r requirements.txt
 .\start-demo.ps1
 ```
 
-### Option B — Ngrok (on your machine only)
+The script picks port **5000** or **5001**, starts Flask, runs **cloudflared**, and writes **`share-message.txt`** with the tunnel URL labeled *Patient Medical History — Live Demo*.
 
-1. [Install ngrok](https://ngrok.com/download) and create a free account.
-2. Connect your account (one-time), following the command shown on the ngrok dashboard, for example:
-   ```bash
-   ngrok config add-authtoken YOUR_TOKEN_HERE
-   ```
+**Optional — ngrok with a stable free subdomain** (after [ngrok signup](https://ngrok.com/download)):
 
-### Run a live demo (Ngrok)
-
-**Terminal 1** — start the app (same as local setup):
-
-```bash
-pip install -r requirements.txt
-python server.py
+```powershell
+ngrok config add-authtoken YOUR_TOKEN
+# Claim one free domain at https://dashboard.ngrok.com/domains
+$env:NGROK_DOMAIN = "patient-medical-history.ngrok-free.app"   # your claimed name
+.\start-demo.ps1 -Tunnel ngrok
 ```
 
-Wait until you see Flask listening on port `5000`.
+**Optional — Cloudflare named tunnel** (custom hostname on your Cloudflare account): see [Cloudflare Tunnel docs](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/).
 
-**Terminal 2** — expose port 5000:
+### Why not only trycloudflare.com?
 
-```bash
-ngrok http 5000
-```
-
-Copy the **Forwarding** HTTPS URL from the ngrok output (e.g. `https://abc123.ngrok-free.app`) and share it alongside your GitHub link.
-
-### Example message to reviewers
-
-```text
-Code:  https://github.com/karann18/patient-medical-history-app
-Demo:  https://YOUR-NGROK-URL.ngrok-free.app
-
-The demo link works while my machine is running the app. For local setup, see the README.
-```
+Quick tunnels (`cloudflared tunnel --url`) always get **random** `*.trycloudflare.com` names. Use them for quick tests; use **Render** or **ngrok + `NGROK_DOMAIN`** for sharing.
 
 ### Important notes
 
-* **You host the demo.** Ngrok forwards traffic to *your* running `server.py`. If you stop the server, close your laptop, or quit ngrok, the demo link stops working.
-* **Keep both terminals open** during a review or demo session.
-* **Free ngrok URLs** usually change each time you restart ngrok unless you use a reserved domain on a paid plan.
-* **Free tier interstitial:** Visitors may see a short ngrok warning page once; they click **Visit Site** to continue.
-* **Demo data only:** Sample patients are seeded for evaluation—do not put real patient health information on a shared tunnel.
-* **First run:** The NLP model may still be downloading on your machine; summaries use a fast text fallback until the model is ready.
+* **Render demo** runs 24/7 on Render’s servers (with free-tier sleep). **Local tunnels** only work while your PC runs `server.py` and the tunnel.
+* **Demo data only** — sample patients for evaluation; do not share real PHI.
+* **Full NLP locally:** `pip install -r requirements.txt` downloads the Hugging Face model on first run; cloud demo uses text fallback by design.
 
 ---
 

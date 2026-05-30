@@ -1,0 +1,6 @@
+Patient Medical History — Live Demo (Agenix AI internship project)
+
+Code:  https://github.com/karann18/patient-medical-history-app
+Demo:  https://patient-medical-history.onrender.com
+
+The demo runs on Render (sample patients, fast text summaries). For full NLP locally, see the README.

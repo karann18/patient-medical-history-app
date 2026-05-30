@@ -1,0 +1,14 @@
+# One-time setup: https://dashboard.render.com → New → Blueprint → connect this repo.
+# Public URL: https://patient-medical-history.onrender.com
+services:
+  - type: web
+    name: patient-medical-history
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements-cloud.txt && python -c "from models import init_db; init_db()"
+    startCommand: gunicorn --bind 0.0.0.0:$PORT server:app
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.11.9"
+      - key: RENDER
+        value: "true"

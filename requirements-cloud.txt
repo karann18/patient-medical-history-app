@@ -1,0 +1,5 @@
+# Lightweight deps for cloud deploy (Render). NLP uses text fallback — no torch/transformers.
+flask==3.0.3
+flask-cors==6.0.2
+sqlalchemy==2.0.34
+gunicorn==23.0.0

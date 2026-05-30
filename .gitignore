@@ -19,3 +19,8 @@ patients.sqbpro
 # IDE / Editor
 .vscode/
 .idea/
+
+# Ephemeral local tunnel output
+live-demo-url.txt
+cloudflared-*.log
+_test_api.py

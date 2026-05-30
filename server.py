@@ -126,7 +126,13 @@ if __name__ == '__main__':
     # Initialize DB if it doesn't exist
     if not os.path.exists('patients.db'):
         init_db()
-    
+
     # use_reloader=False avoids restarts when ML libs write cache files under site-packages
     port = int(os.environ.get("PORT", "5000"))
-    app.run(debug=True, port=port, use_reloader=False)
+    is_cloud = os.environ.get("RENDER") == "true"
+    app.run(
+        debug=not is_cloud,
+        host="0.0.0.0" if is_cloud else "127.0.0.1",
+        port=port,
+        use_reloader=False,
+    )
