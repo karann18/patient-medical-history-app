@@ -1,7 +1,11 @@
-# Quick demo: Flask + public tunnel
+# Quick demo: Flask + public tunnel (cloudflared or ngrok)
 # Usage: .\start-demo.ps1
 # Requires: pip install -r requirements.txt
-# Ngrok: free account + authtoken from https://dashboard.ngrok.com/get-started/your-authtoken
+
+param(
+    [ValidateSet("cloudflared", "ngrok")]
+    [string]$Tunnel = "cloudflared"
+)
 
 $ErrorActionPreference = "Stop"
 $ProjectRoot = $PSScriptRoot
@@ -11,20 +15,13 @@ if (-not (Test-Path "patients.db")) {
     python -c "from models import init_db; init_db()"
 }
 
-$ngrokCmd = Get-Command ngrok -ErrorAction SilentlyContinue
-if (-not $ngrokCmd) {
-  $wingetNgrok = Get-ChildItem -Path "$env:LOCALAPPDATA\Microsoft\WinGet\Packages" -Filter "ngrok.exe" -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1
-  if ($wingetNgrok) { $ngrokExe = $wingetNgrok.FullName } else { throw "ngrok not found. Install: winget install Ngrok.Ngrok" }
-} else {
-  $ngrokExe = $ngrokCmd.Source
-}
-
 Write-Host ""
 Write-Host "=== Patient Medical History Demo ===" -ForegroundColor Cyan
 Write-Host "GitHub: https://github.com/karann18/patient-medical-history-app"
+Write-Host "Local:  http://localhost:5000"
 Write-Host ""
-Write-Host "Starting Flask on http://localhost:5000 ..."
-Write-Host "Starting ngrok tunnel (copy the https Forwarding URL) ..."
+Write-Host "Starting Flask (port 5000)..."
+Write-Host "Starting $Tunnel tunnel — copy the public https URL from its output."
 Write-Host "Keep this window open during your demo."
 Write-Host ""
 
@@ -34,7 +31,23 @@ $flaskJob = Start-Job -ScriptBlock {
 }
 
 Start-Sleep -Seconds 3
-Start-Process -FilePath $ngrokExe -ArgumentList "http","5000" -NoNewWindow
+
+if ($Tunnel -eq "ngrok") {
+    $ngrokCmd = Get-Command ngrok -ErrorAction SilentlyContinue
+    if (-not $ngrokCmd) {
+        $wingetNgrok = Get-ChildItem -Path "$env:LOCALAPPDATA\Microsoft\WinGet\Packages" -Filter "ngrok.exe" -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1
+        if (-not $wingetNgrok) { throw "ngrok not found. Install: winget install Ngrok.Ngrok" }
+        $tunnelExe = $wingetNgrok.FullName
+    } else {
+        $tunnelExe = $ngrokCmd.Source
+    }
+    & $tunnelExe http 5000
+} else {
+    $cf = "${env:ProgramFiles(x86)}\cloudflared\cloudflared.exe"
+    if (-not (Test-Path $cf)) { $cf = (Get-Command cloudflared -ErrorAction SilentlyContinue).Source }
+    if (-not $cf) { throw "cloudflared not found. Install: winget install Cloudflare.cloudflared" }
+    & $cf tunnel --url http://127.0.0.1:5000
+}
 
 try {
     Wait-Job $flaskJob

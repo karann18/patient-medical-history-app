@@ -96,7 +96,28 @@ You can give reviewers **two links** so they can either inspect the code or try 
 
 Flask serves the UI and API on a **single port (`5000`)**, which makes Ngrok a one-command tunnel.
 
-### Prerequisites (Ngrok, on your machine only)
+### Option A — Cloudflare Tunnel (no signup, fastest)
+
+Install [cloudflared](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/downloads/) (or `winget install Cloudflare.cloudflared`), then:
+
+**Terminal 1:**
+```bash
+python server.py
+```
+
+**Terminal 2:**
+```bash
+cloudflared tunnel --url http://127.0.0.1:5000
+```
+
+Copy the `https://….trycloudflare.com` URL from the output.
+
+Or run both with the helper script (defaults to cloudflared):
+```powershell
+.\start-demo.ps1
+```
+
+### Option B — Ngrok (on your machine only)
 
 1. [Install ngrok](https://ngrok.com/download) and create a free account.
 2. Connect your account (one-time), following the command shown on the ngrok dashboard, for example:
@@ -104,7 +125,7 @@ Flask serves the UI and API on a **single port (`5000`)**, which makes Ngrok a o
    ngrok config add-authtoken YOUR_TOKEN_HERE
    ```
 
-### Run a live demo
+### Run a live demo (Ngrok)
 
 **Terminal 1** — start the app (same as local setup):
 
