@@ -113,4 +113,5 @@ if __name__ == '__main__':
     if not os.path.exists('patients.db'):
         init_db()
     
-    app.run(debug=True, port=5000)
+    # use_reloader=False avoids restarts when ML libs write cache files under site-packages
+    app.run(debug=True, port=5000, use_reloader=False)

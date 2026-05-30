@@ -85,6 +85,64 @@ python server.py
 
 ---
 
+## 🔗 Share the Project (GitHub + Ngrok)
+
+You can give reviewers **two links** so they can either inspect the code or try the app instantly—no install required for the live demo.
+
+| Link | Best for | What the reviewer does |
+|------|----------|-------------------------|
+| **GitHub repo** | Source code, local setup, code review | Clone the repo → follow the **Setup & Installation** section above |
+| **Ngrok URL** | Quick live demo in a browser | Open your public HTTPS link—no Python, pip, or downloads |
+
+Flask serves the UI and API on a **single port (`5000`)**, which makes Ngrok a one-command tunnel.
+
+### Prerequisites (Ngrok, on your machine only)
+
+1. [Install ngrok](https://ngrok.com/download) and create a free account.
+2. Connect your account (one-time), following the command shown on the ngrok dashboard, for example:
+   ```bash
+   ngrok config add-authtoken YOUR_TOKEN_HERE
+   ```
+
+### Run a live demo
+
+**Terminal 1** — start the app (same as local setup):
+
+```bash
+pip install -r requirements.txt
+python server.py
+```
+
+Wait until you see Flask listening on port `5000`.
+
+**Terminal 2** — expose port 5000:
+
+```bash
+ngrok http 5000
+```
+
+Copy the **Forwarding** HTTPS URL from the ngrok output (e.g. `https://abc123.ngrok-free.app`) and share it alongside your GitHub link.
+
+### Example message to reviewers
+
+```text
+Code:  https://github.com/karann18/patient-medical-history-app
+Demo:  https://YOUR-NGROK-URL.ngrok-free.app
+
+The demo link works while my machine is running the app. For local setup, see the README.
+```
+
+### Important notes
+
+* **You host the demo.** Ngrok forwards traffic to *your* running `server.py`. If you stop the server, close your laptop, or quit ngrok, the demo link stops working.
+* **Keep both terminals open** during a review or demo session.
+* **Free ngrok URLs** usually change each time you restart ngrok unless you use a reserved domain on a paid plan.
+* **Free tier interstitial:** Visitors may see a short ngrok warning page once; they click **Visit Site** to continue.
+* **Demo data only:** Sample patients are seeded for evaluation—do not put real patient health information on a shared tunnel.
+* **First run:** The NLP model may still be downloading on your machine; summaries use a fast text fallback until the model is ready.
+
+---
+
 ## 📝 Design Decisions & Optimizations
 
 1. **Why SQLite instead of PostgreSQL/MySQL?**
