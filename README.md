@@ -18,26 +18,26 @@ Developed as an internship use-case project for **Agenix AI**.
 
 ```mermaid
 flowchart TD
-    subgraph Frontend [Browser UI]
-        HTML[index.html]
-        CSS[style.css]
-        JS[app.js - Vanilla Fetch]
+    subgraph Frontend ["Browser UI"]
+        HTML["index.html"]
+        CSS["style.css"]
+        JS["app.js - Vanilla Fetch"]
     end
 
-    subgraph Backend [Flask API Server - port 5000]
-        Server[server.py]
-        API[/api/patients]
-        Static[Static File Server]
+    subgraph Backend ["Flask API Server - port 5000"]
+        Server["server.py"]
+        API["/api/patients"]
+        Static["Static File Server"]
     end
 
     subgraph Database Layer
-        ORM[SQLAlchemy]
-        SQLite[(patients.db)]
+        ORM["SQLAlchemy"]
+        SQLite[("patients.db")]
     end
 
-    subgraph AI Engine [Background Thread]
-        HF[Hugging Face Transformers]
-        Model[distilbart-cnn-12-6]
+    subgraph AI Engine ["Background Thread"]
+        HF["Hugging Face Transformers"]
+        Model["distilbart-cnn-12-6"]
     end
 
     HTML <--> Static
