@@ -29,11 +29,14 @@ def load_nlp():
 
 threading.Thread(target=load_nlp, daemon=True).start()
 
+def quick_summary(patient):
+    allergy_str = ", ".join(patient['allergies']) if patient['allergies'] and patient['allergies'][0] != "None" else "no known allergies"
+    return f"{patient['name']} is a {patient['age']}-year-old {patient['gender']} with {allergy_str}."
+
 def generate_nlp_summary(patient):
     # If the model is not loaded yet or failed, fallback to a fast programmatic summary
     if model is None or tokenizer is None:
-        allergy_str = ", ".join(patient['allergies']) if patient['allergies'] and patient['allergies'][0] != "None" else "no known allergies"
-        return f"{patient['name']} is a {patient['age']}-year-old {patient['gender']} with {allergy_str}."
+        return quick_summary(patient)
 
     # Construct a medical narrative for the NLP to summarize
     text = f"Patient {patient['name']} is {patient['age']} years old. "
@@ -59,7 +62,7 @@ def generate_nlp_summary(patient):
         print("Summarization failed:", e)
         return text # Fallback
 
-def patient_to_dict(p):
+def patient_to_dict(p, with_nlp=False):
     data = {
         "id": p.id,
         "name": p.name,
@@ -71,8 +74,8 @@ def patient_to_dict(p):
         "surgeries": p.surgeries,
         "encounters": p.encounters
     }
-    # Append the dynamically generated summary
-    data["nlp_summary"] = generate_nlp_summary(data)
+    if with_nlp:
+        data["nlp_summary"] = generate_nlp_summary(data)
     return data
 
 @app.route('/api/patients', methods=['GET'])
@@ -82,6 +85,17 @@ def get_patients():
     results = [patient_to_dict(p) for p in patients]
     session.close()
     return jsonify(results)
+
+@app.route('/api/patients/<patient_id>', methods=['GET'])
+def get_patient(patient_id):
+    session = Session()
+    patient = session.query(Patient).filter_by(id=patient_id).first()
+    if not patient:
+        session.close()
+        return jsonify({"error": "Patient not found"}), 404
+    result = patient_to_dict(patient, with_nlp=True)
+    session.close()
+    return jsonify(result)
 
 @app.route('/api/patients', methods=['POST'])
 def add_patient():
@@ -103,7 +117,7 @@ def add_patient():
     session.add(new_patient)
     session.commit()
     
-    res = patient_to_dict(new_patient)
+    res = patient_to_dict(new_patient, with_nlp=True)
     session.close()
     
     return jsonify(res), 201
@@ -114,4 +128,5 @@ if __name__ == '__main__':
         init_db()
     
     # use_reloader=False avoids restarts when ML libs write cache files under site-packages
-    app.run(debug=True, port=5000, use_reloader=False)
+    port = int(os.environ.get("PORT", "5000"))
+    app.run(debug=True, port=port, use_reloader=False)

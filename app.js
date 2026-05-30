@@ -63,14 +63,28 @@ function renderPatientList(query = '') {
     });
 }
 
-function selectPatient(id) {
+async function selectPatient(id) {
     currentPatient = patients.find(p => p.id === id);
     renderPatientList(searchInput.value);
-    
+
     emptyState.classList.add('hidden');
     dashboardContent.classList.remove('hidden');
-    
+
     updateDashboard();
+
+    try {
+        patientSummaryEl.innerHTML = '<strong>NLP Summary:</strong> Generating...';
+        const response = await fetch(`/api/patients/${id}`);
+        if (response.ok) {
+            const detail = await response.json();
+            currentPatient = detail;
+            const idx = patients.findIndex(p => p.id === id);
+            if (idx >= 0) patients[idx] = detail;
+            updateDashboard();
+        }
+    } catch (error) {
+        console.error('Failed to load patient summary:', error);
+    }
 }
 
 function updateDashboard() {
